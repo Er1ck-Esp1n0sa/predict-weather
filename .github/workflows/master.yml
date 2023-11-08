@@ -11,20 +11,28 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
+    
     - name: python version
       run: python --version
+    
     - name: Instalar dependencias
       run: pip install -r requirements.txt
+    
     - name: download dataset
-      run: wget -O data/heart.csv ${{github.event.client_payload.dataseturl}}
+      run: wget -O https://firebasestorage.googleapis.com/v0/b/prediction-app-5ea10.appspot.com/o/GlobalWeatherRepository.csv?alt=media&token=0e6b0e80-d6f1-441f-b508-8102802a1e7a ${{github.event.client_payload.dataseturl}}
+    
     - name: cat dataset
       run: cat data/GlobalWeatherRepository.csv
+    
     - name: Entrenar modelo de Machine Learning
       run: python models/random_forest/random_forest.py
+    
     - name: Constuir Imagen Docker
       run: docker build -t ${{secrets.DOCKER_USER}}/${{secrets.MODEL_NAME}}:${{github.sha}} .
+    
     - name: show docker images
       run: docker images
+    
     - name: docker login
       env:
         DOCKER_USER: ${{secrets.DOCKER_USER}}
